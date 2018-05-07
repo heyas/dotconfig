@@ -12,42 +12,35 @@ function! GetRunningOS()
 endfunction
 let os=GetRunningOS()
 
-" ==================================================
-" VARIOUS
-" ==================================================
+" TODO switch this out for `which python`
+" if (os == "linux")
+"   let g:python_host_prog  = '/usr/bin/python'
+"   let g:python3_host_prog = '/usr/bin/python3'
+" elseif (os == "mac")
+"   let g:python3_host_prog = '/usr/local/bin/python3'
+" let g:python_host_prog  = '/usr/local/bin/python'
+" endif
 
-inoremap jk <Esc>
-
-set timeoutlen=1000 ttimeoutlen=0
-
 " ==================================================
-" WINDOW KEYBINDINGS
+" BUFFER / WINDOW
 " ==================================================
 
 nnoremap <Space>w <C-w>
-" TODO disabled because it interferes with typing
-"tnoremap <Space>w <C-\><C-n><C-w>
-"inoremap <Space>w <Esc><C-w>
-"vnoremap <Space>w <Esc><C-w>
-
-" ==================================================
-" BUFFER KEYBINDINGS
-" ==================================================
 
 " Toggle between last buffer
-nnoremap <Tab> :b#<CR>
+nnoremap <Tab> ;b#<CR>
 
 " open a new empty buffer (replaces `:tabnew`)
-nnoremap <Space>bn :enew<CR>
+nnoremap <Space>bn ;enew<CR>
 " Close the current buffer and move to the previous one
 " TODO if there's only one buffer I want to leave vim
-nnoremap Q :bp<BAR>bd#<CR>
+nnoremap Q ;bp<BAR>bd#<CR>
 "nnoremap q :q<CR>
-nnoremap <Space>qQ :qall<CR>
+nnoremap <Space>qQ ;qall<CR>
 
 " next and previous buffer
-nnoremap <Space>[ :bp<CR>
-nnoremap <Space>] :bn<CR>
+nnoremap <Space>[ ;bp<CR>
+nnoremap <Space>] ;bn<CR>
 
 " a new buffer without filetype (:enew) is assumed to be markdown
 autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
@@ -57,9 +50,12 @@ autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
 " ==================================================
 
 call plug#begin('~/.config/nvim/plugged')
+
+" code completion
 Plug 'Shougo/deoplete.nvim'
 let g:deoplete#enable_at_startup = 1
 
+" colorscheme
 Plug 'morhetz/gruvbox'
 
 " syntax
@@ -70,7 +66,10 @@ Plug 'Quramy/vim-js-pretty-template'
 Plug 'moll/vim-node'
 Plug 'neoclide/vim-jsx-improve'
 Plug 'othree/yajs.vim'
+Plug 'hail2u/vim-css3-syntax'
+Plug 'alexlafroscia/postcss-syntax.vim'
 
+" tim pope
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
@@ -100,6 +99,7 @@ let g:ale_fixers = { 'javascript': ['prettier', 'eslint','prettier-eslint'], 'js
 let g:ale_linters = {'javascript': ['prettier']}
 let g:ale_fix_on_save = 1
 
+" snippets
 Plug 'SirVer/ultisnips'
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-n>"
@@ -114,17 +114,12 @@ Plug 'honza/vim-snippets'
 Plug 'epilande/vim-es2015-snippets'
 Plug 'epilande/vim-react-snippets'
 
-" requirement for ranger
-Plug 'rbgrouleff/bclose.vim'
-Plug 'francoiscabrol/ranger.vim'
-" don't use default keymapping (<leader>f)
-let g:ranger_map_keys = 0
-nnoremap <C-n> :Ranger<CR>
+Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'ctrlpvim/ctrlp.vim'
-nnoremap <Space>j :CtrlP<CR>
+nnoremap <Space>j ;CtrlP<CR>
 " open buffers
-nnoremap <Space>f :CtrlPBuffer<CR>
+nnoremap <Space>f ;CtrlPBuffer<CR>
 let g:ctrlp_custom_ignore = {
    \ 'dir':  '\v[\/](\.git|_site|dist|node_modules)$',
    \ 'file': '\v\.(exe|so|dll)$',
@@ -223,12 +218,13 @@ let g:startify_change_to_dir = 0
 
 " Distraction-free toggle
 Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
-let g:limelight_conceal_guifg = '#757575'
+" TODO I want limelight, but not for markdown
+" Plug 'junegunn/limelight.vim'
+" autocmd! User GoyoEnter Limelight
+" autocmd! User GoyoLeave Limelight!
+" let g:limelight_conceal_guifg = '#757575'
 
-nnoremap <Space>wd :Goyo<CR>
+nnoremap <Space>wd ;Goyo<CR>
 
 call plug#end()
 
@@ -244,16 +240,16 @@ set background=dark
 colorscheme gruvbox
 
 " set vim background color
-"autocmd VimEnter * highlight Normal guibg=#1d2021
+" autocmd VimEnter * highlight Normal guibg=#1d2021
 autocmd VimEnter * highlight Normal guibg=None
 
 " highlight current Line
-set cursorline
-highlight CursorLine guibg=#0d0d0d guifg=None
+" set cursorline
+" highlight CursorLine guibg=#0d0d0d guifg=None
 
 " no tilde for empty lines
 " autocmd VimEnter * highlight EndOfBuffer guibg=bg guifg=bg
-autocmd VimEnter * highlight EndOfBuffer guibg=#282828 guifg=#282828
+autocmd VimEnter * highlight EndOfBuffer guibg=None guifg=#282828
 
 " nvim supports mode-dependent cursor shape built-in
 set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
@@ -277,6 +273,8 @@ set fillchars+=vert:│
 " SETTINGS
 " ==================================================
 
+set timeoutlen=1000 ttimeoutlen=0
+
 " Make tabs two spaces wide
 set tabstop=2
 set shiftwidth=2
@@ -291,12 +289,23 @@ set directory=$HOME/.config/nvim/swaps
 set undodir =$HOME/.config/nvim/undo
 set undofile
 
-" CUSTOM script to execute Obsession session with timestamp
+" save session with timestamp
 " autocmd VimEnter * execute "Obsession" . "~/.config/nvim/sessions/" . strftime('%Y%m%d%H%M%S') . ".vim"
+autocmd VimEnter * execute "Obsession"
 
 " ==================================================
 " CONVENIENCE
 " ==================================================
+
+inoremap jk <Esc>
+
+" no need for shift to enter command
+nnoremap ; :
+" but I still want to go to the next match on line
+nnoremap : ;
+
+" save - W means w
+command! W ;w
 
 " make all file-related tasks search down subfolders
 set path+=**
@@ -371,9 +380,6 @@ set scrolloff=2
 " eol means the same in visual as in normal mode
 vnoremap $ $h
 
-" no need for shift to enter command
-nnoremap ; :
-
 " ==================================================
 " FUNCTIONALITY
 " ==================================================
@@ -384,6 +390,7 @@ nnoremap ; :
 " https://github.com/ggreer/the_silver_searcher
 if executable('ag')
   " Use ag over grep
+  " weirdly ag has a different syntax between macos/linux (?)
   if (os == "linux")
     set grepprg=ag\ --nogroup\ --nocolor\ --path-to-agignore\ ~/.config/ag/.ignore
   elseif (os == "mac")
@@ -398,10 +405,10 @@ else
 endif
 
 " bind K to grep word under cursor
-nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+nnoremap K ;grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 " bind \ (backward slash) to grep shortcut
 command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-nnoremap \ :Ag<SPACE>
+nnoremap \ ;Ag<SPACE>
 
 " toggle quickfix and location lists with <Leader>q/l
 " http://vim.wikia.com/wiki/Toggle_to_open_or_close_the_quickfix_window
@@ -432,8 +439,10 @@ function! ToggleList(bufname, pfx)
   endif
 endfunction
 
-nmap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
-nmap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
+nmap <silent> <Leader>l ;call ToggleList("Location List", 'l')<CR>
+nmap <silent> <Leader>q ;call ToggleList("Quickfix List", 'c')<CR>
+
+" :Json command to format and highlight
 
 function! ThatFunc()
   %!python -m json.tool
@@ -444,14 +453,3 @@ function! ThatFunc()
 endfunction
 command! Json call ThatFunc()
 
-" ==================================================
-" NEOVIM
-" ==================================================
-
-if (os == "linux")
-let g:python_host_prog  = '/usr/bin/python'
-  let g:python3_host_prog = '/usr/bin/python3'
-elseif (os == "mac")
-  let g:python3_host_prog = '/usr/local/bin/python3'
-let g:python_host_prog  = '/usr/local/bin/python'
-endif
